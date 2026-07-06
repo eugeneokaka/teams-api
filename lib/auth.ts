@@ -13,6 +13,23 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+  user: {
+    additionalFields: {
+      firstName: {
+        type: "string",
+      },
+      lastName: {
+        type: "string",
+      },
+    },
+  },
+  socialProviders: {
+    google: {
+      prompt: "select_account",
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    },
+  },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
@@ -61,6 +78,7 @@ export const auth = betterAuth({
       }).catch((err) => console.error("[auth] sendVerificationEmail failed:", err));
     },
   },
+  databaseHooks: {},
   trustedOrigins: [process.env.APP_URL ?? "http://localhost:3001"],
   baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
 });

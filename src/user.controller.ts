@@ -1,22 +1,34 @@
-import { Controller, Get } from '@nestjs/common';
-import { Session, AllowAnonymous, OptionalAuth } from '@thallesp/nestjs-better-auth';
-import type { UserSession } from '@thallesp/nestjs-better-auth';
-@Controller('users')
+import { Controller, Get, Query } from "@nestjs/common";
+import { Session } from "@thallesp/nestjs-better-auth";
+import type { UserSession } from "@thallesp/nestjs-better-auth";
+import { PrismaService } from "./prisma/prisma.service";
+
+@Controller("users")
 export class UserController {
-  @Get('me')
+  constructor(private readonly prisma: PrismaService) {}
+
+  @Get("me")
   async getProfile(@Session() session: UserSession) {
     return { user: session.user };
   }
 
-  @Get('public')
-  @AllowAnonymous() // Allow anonymous access
-  async getPublic() {
-    return { message: 'Public route' };
-  }
+  @Get("search")
+  async search(@Query("email") email: string) {
+    if (!email) return [];
 
-  @Get('optional')
-  @OptionalAuth() // Authentication is optional
-  async getOptional(@Session() session: UserSession) {
-    return { authenticated: !!session };
+    return this.prisma.user.findMany({
+      where: {
+        email: { contains: email, mode: "insensitive" },
+      },
+      select: {
+        id: true,
+        name: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        image: true,
+      },
+      take: 10,
+    });
   }
 }
