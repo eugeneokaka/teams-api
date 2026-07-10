@@ -1,0 +1,66 @@
+this is how to configure nginix to use my cusomm domain
+
+
+
+go to namecheap and add the recodrd
+
+Create:
+
+Type	Host	Value
+A Record	nestapi	Your Elastic IP
+
+Example:
+
+Host:
+nestapi
+
+Value:
+54.xxx.xxx.xxx
+
+TTL:
+Automatic
+
+Save it.
+
+After DNS propagates (often within minutes, but sometimes longer), the following should resolve to your server:
+
+http://nestapi.eugenecode.xyz
+Step 3: Open ports in the EC2 Security Group
+
+Ensure these inbound rules exist:
+
+Type	Port
+
+
+use nslookup to make sure its rady
+then install nginx
+sudo apt update
+sudo apt install nginx -y
+
+then confugure nginx 
+
+sudo nano /etc/nginx/sites-available/nestapi
+add this 
+server {
+    listen 80;
+    server_name nestapi.eugenecode.xyz;
+
+    location / {
+        proxy_pass http://localhost:3000;
+
+        proxy_http_version 1.1;
+
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+
+        proxy_set_header Host $host;
+
+        proxy_set_header X-Real-IP $remote_addr;
+
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+ then enalble it 
+ sudo ln -s /etc/nginx/sites-available/nestapi /etc/nginx/sites-enabled/

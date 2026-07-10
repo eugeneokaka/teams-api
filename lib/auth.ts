@@ -17,23 +17,19 @@ export const auth = betterAuth({
     additionalFields: {
       firstName: {
         type: "string",
+        required: true,
       },
       lastName: {
         type: "string",
+        required: true,
       },
-    },
-  },
-  socialProviders: {
-    google: {
-      prompt: "select_account",
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     },
   },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
     sendResetPassword: async ({ user, url }) => {
+
       console.log("[auth] sendResetPassword called for:", user.email);
       console.log("[auth] reset URL:", url);
       void sendEmail({
@@ -78,7 +74,6 @@ export const auth = betterAuth({
       }).catch((err) => console.error("[auth] sendVerificationEmail failed:", err));
     },
   },
-  databaseHooks: {},
   trustedOrigins: [process.env.APP_URL ?? "http://localhost:3001"],
   baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
 });

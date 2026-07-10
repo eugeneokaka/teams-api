@@ -27,6 +27,7 @@ export class TaskController {
     @Body("assigneeId") assigneeId?: string,
     @Body("parentId") parentId?: string,
   ) {
+    console.log(title, assigneeId, parentId);
     this.logger.log(`POST ${workspaceId} title="${title}" assigneeId=${assigneeId} parentId=${parentId}`);
     return this.taskService.create(
       workspaceId,
