@@ -82,6 +82,8 @@ export const auth = betterAuth({
       }).catch((err) => console.error("[auth] sendVerificationEmail failed:", err));
     },
   },
-  trustedOrigins: [process.env.APP_URL ?? "http://localhost:3001"],
+  trustedOrigins: (process.env.CORS_ORIGINS ?? process.env.APP_URL ?? "http://localhost:3001")
+    .split(",")
+    .map((o) => o.trim()),
   baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
 });
